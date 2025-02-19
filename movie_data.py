@@ -2,11 +2,28 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 from pydantic import BaseModel, PositiveInt, ConfigDict
+from pathlib import Path
+import requests
+import tarfile
+from typing import ClassVar
+
 
 class MovieData(BaseModel):
+    """ Klasse zum Laden und Verarbeiten der MovieSummaries-Daten. """
+
+    # Auto-Download Einstellungen als `ClassVar`
+    DATA_URL: ClassVar[str] = "http://www.cs.cmu.edu/~ark/personas/data/MovieSummaries.tar.gz"
+    DOWNLOAD_DIR: ClassVar[Path] = Path(__file__).resolve().parent / "downloads"
+    ARCHIVE_PATH: ClassVar[Path] = DOWNLOAD_DIR / "MovieSummaries.tar.gz"
+    EXTRACT_DIR: ClassVar[Path] = DOWNLOAD_DIR / "MovieSummaries"
+
+    # Pydantic Konfiguration
     model_config = ConfigDict(arbitrary_types_allowed=True)
-    movie_metadata_path: str = r"C:\Users\Marti\Desktop\Nova SBE\T3 2025\AP\Group Assignment\MovieSummaries\movie.metadata.tsv"
-    character_metadata_path: str = r"C:\Users\Marti\Desktop\Nova SBE\T3 2025\AP\Group Assignment\MovieSummaries\character.metadata.tsv"
+
+    # Dynamische Datei-Pfade
+    base_path: Path = Path(__file__).resolve().parent / "MovieSummaries"
+    movie_metadata_path: Path = base_path / "movie.metadata.tsv"
+    character_metadata_path: Path = base_path / "character.metadata.tsv"
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -14,63 +31,50 @@ class MovieData(BaseModel):
         object.__setattr__(self, "movies_df", None)
         object.__setattr__(self, "actors_df", None)
         
+        self._ensure_data()
         self._load_data()
     
-    def _load_data(self):
-        print(f"Checking: {self.movie_metadata_path}")
-        print(f"Checking: {self.character_metadata_path}")
-
-        if not os.path.exists(self.movie_metadata_path) or not os.path.exists(self.character_metadata_path):
-            raise FileNotFoundError(f"Missing dataset files.\n"
-                                    f"Expected: {self.movie_metadata_path}\n"
-                                    f"Expected: {self.character_metadata_path}\n"
-                                    f"Please extract the dataset properly.")
+    def _ensure_data(self):
+        """ Überprüft, ob die Daten vorhanden sind, lädt und entpackt sie falls nötig. """
+        self.DOWNLOAD_DIR.mkdir(exist_ok=True)  # downloads/ Ordner erstellen, falls nicht vorhanden
         
+        if not self.EXTRACT_DIR.exists():  # Falls Daten nicht existieren → herunterladen und entpacken
+            print("🔽 Daten werden heruntergeladen...")
+            self._download_data()
+            print("📦 Daten werden entpackt...")
+            self._extract_data()
+
+    def _download_data(self):
+        """ Lädt die MovieSummaries-Daten herunter. """
+        response = requests.get(self.DATA_URL, stream=True)
+        if response.status_code == 200:
+            with open(self.ARCHIVE_PATH, "wb") as file:
+                for chunk in response.iter_content(chunk_size=8192):
+                    file.write(chunk)
+        else:
+            raise RuntimeError(f"❌ Fehler beim Download: Status {response.status_code}")
+
+    def _extract_data(self):
+        """ Entpackt die heruntergeladene TAR-Datei. """
+        with tarfile.open(self.ARCHIVE_PATH, "r:gz") as tar:
+            tar.extractall(self.EXTRACT_DIR)
+
+    def _load_data(self):
+        """ Überprüft die Existenz der Daten und lädt sie als Pandas DataFrames. """
+        print(f"🔍 Überprüfe: {self.movie_metadata_path}")
+        print(f"🔍 Überprüfe: {self.character_metadata_path}")
+
+        if not self.movie_metadata_path.exists() or not self.character_metadata_path.exists():
+            raise FileNotFoundError(
+                f"❌ Fehlende Datensätze!\n"
+                f"🔴 Erwartet: {self.movie_metadata_path}\n"
+                f"🔴 Erwartet: {self.character_metadata_path}\n"
+                f"⚠ Bitte stelle sicher, dass das Dataset richtig extrahiert wurde."
+            )
+
+        print("📂 Dateien gefunden! Lade in DataFrames...")
+
         object.__setattr__(self, "movies_df", pd.read_csv(self.movie_metadata_path, sep="\t", header=None))
         object.__setattr__(self, "actors_df", pd.read_csv(self.character_metadata_path, sep="\t", header=None))
 
-    def movie_type(self, N: PositiveInt = 10) -> pd.DataFrame:
-        if not isinstance(N, int):
-            raise ValueError("N must be an integer.")
-        
-        df = self.movies_df[3].value_counts().head(N).reset_index()
-        df.columns = ["Movie_Type", "Count"]
-        
-        print("🔍 movie_type() DataFrame Sample:")
-        print(df.head())
-        print("Columns:", df.columns)
-        
-        return df
-    
-    def actor_count(self) -> pd.DataFrame:
-        df = self.movies_df[8].apply(lambda x: len(str(x).split(','))).value_counts().reset_index()
-        df.columns = ["Number_of_Actors", "Movie_Count"]
-        return df
-    
-    def actor_distributions(self, gender: str, max_height: float, min_height: float, plot: bool = False) -> pd.DataFrame:
-        if not isinstance(gender, str):
-            raise ValueError("Gender must be a string.")
-        try:
-            max_height = float(max_height)
-            min_height = float(min_height)
-        except ValueError:
-            raise ValueError("max_height and min_height must be numeric values.")
-        
-        if max_height <= 0 or min_height <= 0:
-            raise ValueError("max_height and min_height must be positive numbers.")
-        
-        if gender != "All":
-            filtered_df = self.actors_df[self.actors_df[5] == gender]
-        else:
-            filtered_df = self.actors_df
-        
-        filtered_df = filtered_df[(filtered_df[6] >= min_height) & (filtered_df[6] <= max_height)]
-        
-        if plot:
-            plt.hist(filtered_df[6], bins=20, alpha=0.7)
-            plt.xlabel("Height")
-            plt.ylabel("Frequency")
-            plt.title(f"Height Distribution for {gender} actors")
-            plt.show()
-        
-        return filtered_df[[7, 6, 5]]
+        print("✅ Daten erfolgreich geladen!")
