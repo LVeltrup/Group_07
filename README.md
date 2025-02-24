@@ -9,7 +9,7 @@ This project is a Streamlit-based data analysis app that processes movie and act
 
 Project Structure  
 
-/Group_XX/  
+/Group_07/  
 │── MovieSummaries/         Directory for dataset storage  
 │── src/  
 │   ├── movie_data.py       MovieData class for data handling  
