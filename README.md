@@ -103,5 +103,7 @@ This project is open-source and available under the MIT License.
 
 
 Contributors  
-- Leon, Felix, Florian, Martin
-- Your Emails  
+- Leon Veltrup - 67561@novasbe.pt
+- Felix Specht - 64725@novasbe.pt
+- Florian Nolte - 64386@novasbe.pt
+- Martin Mayer-Figge - 68131@novasbe.pt
