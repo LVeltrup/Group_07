@@ -14,7 +14,7 @@ Project Structure
 ├── movie_data.py       MovieData class for data handling  
 ├── app.py              Streamlit application  
 ├── test_movie_data.py  Pytest unit tests  
-│── README.md           Project documentation  
+│── README.md           Project documentation
 
 Installation  
 To run the app, you need Python 3.8+ and the required dependencies.
