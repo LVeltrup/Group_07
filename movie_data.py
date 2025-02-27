@@ -92,10 +92,17 @@ class MovieData(BaseModel):
 
         print("Files found. Loading into DataFrames...")
 
-        object.__setattr__(self, "movies_df", pd.read_csv(self.movie_metadata_path, sep="\t", header=None))
-        object.__setattr__(self, "actors_df", pd.read_csv(self.character_metadata_path, sep="\t", header=None))
+        movies_df = pd.read_csv(self.movie_metadata_path, sep="\t", header=None)
+        actors_df = pd.read_csv(self.character_metadata_path, sep="\t", header=None)
+
+        movies_df = movies_df.dropna()
+        actors_df = actors_df.dropna()
+
+        object.__setattr__(self, "movies_df", movies_df)
+        object.__setattr__(self, "actors_df", actors_df)
 
         print("Data successfully loaded.")
+
 
     def movie_type(self, N: PositiveInt = 10) -> pd.DataFrame:
         """Returns the top N most common movie genres.
