@@ -173,6 +173,13 @@ class MovieData(BaseModel):
 
         if max_height_cm <= 0 or min_height_cm <= 0:
             raise ValueError("max_height and min_height must be positive numbers.")
+        
+        if not (50 <= min_height_cm <= 250):
+            raise ValueError("min_height must be between 50 cm and 250 cm.")
+        if not (50 <= max_height_cm <= 250):
+            raise ValueError("max_height must be between 50 cm and 250 cm.")
+        if min_height_cm > max_height_cm:
+            raise ValueError("min_height cannot be greater than max_height.")
 
         possible_genders = {"M", "F"}
         filtered_rows = []
