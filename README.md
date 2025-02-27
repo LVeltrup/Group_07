@@ -7,14 +7,16 @@ This project is a Streamlit-based data analysis app that processes movie and act
 - A histogram showing the number of actors per movie.  
 - Filtering and visualization of actors based on gender and height.  
 
-Project Structure  
+## Project Structure
 
-/Group_07/  
-│── MovieSummaries/     Directory for dataset storage    
-├── movie_data.py       MovieData class for data handling  
-├── app.py              Streamlit application  
-├── test_movie_data.py  Pytest unit tests  
-│── README.md           Project documentation
+| Path                   | Description                        |
+|------------------------|--------------------------------|
+| `/Group_07/`          | Root project directory         |
+| ├── `MovieSummaries/` | Directory for dataset storage  |
+| ├── `movie_data.py`   | MovieData class for data handling |
+| ├── `app.py`          | Streamlit application          |
+| ├── `test_movie_data.py` | Pytest unit tests          |
+| ├── `README.md`       | Project documentation         |
 
 Installation  
 To run the app, you need Python 3.8+ and the required dependencies.
