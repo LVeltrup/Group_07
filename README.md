@@ -10,12 +10,11 @@ This project is a Streamlit-based data analysis app that processes movie and act
 Project Structure  
 
 /Group_07/  
-│── MovieSummaries/         Directory for dataset storage  
-│── src/  
-│   ├── movie_data.py       MovieData class for data handling  
-│   ├── app.py              Streamlit application  
-│   ├── test_movie_data.py  Pytest unit tests  
-│── README.md               Project documentation  
+│── MovieSummaries/     Directory for dataset storage    
+├── movie_data.py       MovieData class for data handling  
+├── app.py              Streamlit application  
+├── test_movie_data.py  Pytest unit tests  
+│── README.md           Project documentation  
 
 Installation  
 To run the app, you need Python 3.8+ and the required dependencies.
