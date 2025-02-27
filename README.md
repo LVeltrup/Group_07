@@ -7,7 +7,7 @@ This project is a Streamlit-based data analysis app that processes movie and act
 - A histogram showing the number of actors per movie.  
 - Filtering and visualization of actors based on gender and height.  
 
-## Project Structure
+Project Structure
 
 | Path                   | Description                        |
 |------------------------|--------------------------------|
