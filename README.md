@@ -1,11 +1,16 @@
-Movie Data Analysis App
+Project Overview
 
-Project Overview  
-This project is a Streamlit-based data analysis app that processes movie and actor metadata from the CMU MovieSummaries dataset. The dataset is automatically downloaded, extracted, and processed for analysis. The application includes:
+This project is a Streamlit-based application that processes movie and actor metadata from the CMU MovieSummaries dataset. The app automatically downloads, extracts, and analyzes the data. In addition to the original analyses (movie genre frequency, actor counts, and actor distribution), this updated version includes:
 
-- Analysis of the most frequent movie genres.  
-- A histogram showing the number of actors per movie.  
-- Filtering and visualization of actors based on gender and height.  
+    Chronological Analysis:
+    A new page that shows the number of movies released per year. Users can optionally filter by genre. It also includes an analysis of actor birth dates (grouped either by year or by month).
+
+    Genre Classification Simulation:
+    A third page simulates an AI pipeline that "classifies" a random movie’s genres. This page displays:
+        A random movie title with its summary.
+        The list of genres from the database.
+        A simulated LLM output (for example, by uppercasing the genres).
+        A comparison result showing whether the simulated LLM output matches the database genres.
 
 Project Structure  
 
@@ -96,6 +101,13 @@ Ensure you are using:
 st.pyplot(fig)  
 instead of:  
 plt.show()  
+
+The project now includes three pages:
+• The main page (app.py) for basic analysis,
+• A second page (app2.py) for chronological movie and actor birth analyses, and
+• A third page (app3.py) for AI-based genre classification (using a local LLM from ollama).
+Installation instructions (using the new requirements.txt).
+A short essay discussing how text classification in this project could help in analyzing and categorizing documents in support of the UN’s Sustainable Development Goals (SDGs).
 
 
 License  

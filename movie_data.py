@@ -212,3 +212,41 @@ class MovieData(BaseModel):
             st.pyplot(fig)
 
         return filtered_df
+
+    def releases(self, genre: str = None) -> pd.DataFrame:
+        """
+        Returns a DataFrame counting the number of movies released per year.
+        If a genre is provided, only movies whose genres (from column index 8)
+        contain that genre are considered.
+        """
+        df = self.movies_df.copy()
+        try:
+            df["Year"] = pd.to_datetime(df[3], errors="coerce").dt.year
+        except Exception:
+            df["Year"] = df[3].astype(str).str[:4].astype(float)
+        if genre is not None:
+            df = df[df[8].apply(lambda g: genre in list(g.values()) if isinstance(g, dict) else False)]
+        releases_df = df.groupby("Year").size().reset_index(name="Count").dropna()
+        releases_df["Year"] = releases_df["Year"].astype(int)
+        return releases_df
+
+    def ages(self, period: str = "Y") -> pd.DataFrame:
+        """
+        Returns a DataFrame counting how many actors were born per year (if period='Y')
+        or per month (if period='M'). Defaults to year.
+        """
+        period = period.upper()
+        if period not in ["Y", "M"]:
+            period = "Y"
+        df = self.actors_df.copy()
+        df["BirthDate"] = pd.to_datetime(df[4], errors="coerce")
+        if period == "Y":
+            df["BirthYear"] = df["BirthDate"].dt.year
+            result = df.groupby("BirthYear").size().reset_index(name="Count").dropna()
+            result["BirthYear"] = result["BirthYear"].astype(int)
+            return result
+        else:
+            df["BirthMonth"] = df["BirthDate"].dt.month
+            result = df.groupby("BirthMonth").size().reset_index(name="Count").dropna()
+            result["BirthMonth"] = result["BirthMonth"].astype(int)
+            return result
