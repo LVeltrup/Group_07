@@ -12,89 +12,79 @@ This project is a Streamlit-based application that processes movie and actor met
         A simulated LLM output (for example, by uppercasing the genres).
         A comparison result showing whether the simulated LLM output matches the database genres.
 
-Project Structure  
+### Project Structure
 
-/Group_XX/  
-│── MovieSummaries/         Directory for dataset storage  
-│── src/  
-│   ├── movie_data.py       MovieData class for data handling  
-│   ├── app.py              Streamlit application  
-│   ├── test_movie_data.py  Pytest unit tests  
-│── README.md               Project documentation  
+| Path                   | Description                        |
+|------------------------|--------------------------------|
+| `/Group_07/`          | Root project directory         |
+| ├── `MovieSummaries/` | Directory for dataset storage  |
+| ├── `movie_data.py`   | MovieData class for data handling |
+| ├── `app.py`          | Streamlit application          |
+| ├── `test_movie_data.py` | Pytest unit tests          |
+| ├── `README.md`       | Project documentation         |
 
-Installation  
-To run the app, you need Python 3.8+ and the required dependencies.
+### Installation  
+To run the app, you need **Python 3.8+** and the required dependencies.
 
-Install Required Libraries  
+#### Install Required Libraries  
 Run:  
-pip install -r requirements.txt  
+`pip install -r requirements.txt`
 
-If you don’t have a requirements.txt file, install manually:  
-pip install pandas matplotlib requests streamlit pydantic pytest  
+### Running the App
+Start the Streamlit application by running:
+`streamlit run app.py`
 
+This will open the web app in your default browser.
 
-Running the App  
-Start the Streamlit application by running:  
-streamlit run app.py  
+### Running Tests
+To validate functionality, run the following in the main project directory:
+`pytest -v`
 
-This will open the web app in your default browser.  
-
-
-Running Tests  
-To validate functionality, run the following in the main project directory:  
-pytest -v  
-
-This will test:  
-- movie_type(): Ensures correct genre extraction.  
-- actor_count(): Checks correct calculation of actor counts.  
-- actor_distributions(): Validates filtering logic and error handling.  
+This will test:
+- test_movie_type_invalid_input(): Ensures movie_type() raises an error for invalid input.
+- test_movie_type_output_structure(): Validates that movie_type() returns a correctly structured DataFrame.
+- test_actor_count_structure(): Checks that actor_count() returns a DataFrame with expected structure and integer values.
+- test_actor_distributions_invalid_inputs(): Ensures actor_distributions() raises errors for invalid gender or height values.
+- test_actor_distributions_valid_output(): Verifies that actor_distributions() returns a correctly structured DataFrame.
+- test_actor_distributions_no_results(): Checks that actor_distributions() returns an empty DataFrame when no actors match the filter.
 
 
-Features & Methods  
+### Features & Methods
+- Movie Genre Analysis
+`movie_data.movie_type(N)`
 
-Movie Genre Analysis  
+- Input:
+`N (int)`: Number of top genres to display.
 
-movie_data.movie_type(N)  
+- Output -> A Pandas DataFrame with columns:
+`["Movie_Type", "Count"]`
 
-Input:  
-- N (int): Number of top genres to display.  
+- Actor Count Distribution
+`movie_data.actor_count()`
 
-Output:  
-A Pandas DataFrame with:  
-["Movie_Type", "Count"]  
+- Output -> A Pandas DataFrame with columns:
+`["Number_of_Actors", "Movie_Count"]`
 
+- Actor Filtering by Gender & Height
+`movie_data.actor_distributions(gender, max_height, min_height, plot)`
 
-Actor Count Distribution  
+Input:
+- gender (str): "M", "F", or "All"
+- max_height (float): Maximum height in cm
+- min_height (float): Minimum height in cm
+- plot (bool): If True, displays a height distribution plot in Streamlit.
 
-movie_data.actor_count()  
+Output:
+A Pandas DataFrame with columns:
+`["Actor_Name", "Height_cm", "Gender"]`
 
-Output:  
-A Pandas DataFrame with:  
-["Number_of_Actors", "Movie_Count"]  
+### Troubleshooting
+Dataset Not Found
 
+If files are missing, run:
+`python movie_data.py`
 
-Actor Filtering by Gender & Height  
-
-movie_data.actor_distributions(gender, max_height, min_height, plot)  
-
-Input:  
-- gender (str): "M", "F", or "All"  
-- max_height (float): Max height in cm  
-- min_height (float): Min height in cm  
-- plot (bool): If True, generates a height histogram.  
-
-Output:  
-A Pandas DataFrame with:  
-["Actor_Name", "Height_cm", "Gender"]  
-
-
-Troubleshooting  
-
-Dataset Not Found  
-If files are missing, run:  
-python movie_data.py  
-
-This will re-download and extract the dataset.  
+This will re-download and extract the dataset if it is missing.
 
 Streamlit App Not Displaying Charts  
 Ensure you are using:  
@@ -109,11 +99,12 @@ The project now includes three pages:
 Installation instructions (using the new requirements.txt).
 A short essay discussing how text classification in this project could help in analyzing and categorizing documents in support of the UN’s Sustainable Development Goals (SDGs).
 
+### License
+This project is open-source and available under the MIT License.
 
-License  
-This project is open-source and available under the MIT License.  
+Contributors  
+- Leon Veltrup - 67561@novasbe.pt
+- Felix Specht - 64725@novasbe.pt
+- Florian Nolte - 64386@novasbe.pt
+- Martin Mayer-Figge - 68131@novasbe.pt  
 
-
-Contributors  
-- Leon, Felix, Florian, Martin
-- Your Emails  
