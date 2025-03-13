@@ -29,6 +29,7 @@ class MovieData(BaseModel):
 
     movie_metadata_path: Path = EXTRACT_DIR / "movie.metadata.tsv"
     character_metadata_path: Path = EXTRACT_DIR / "character.metadata.tsv"
+    summary_path: Path = EXTRACT_DIR / "plot_summaries.txt"
 
     def __init__(self, **data):
         """Initializes the MovieData class, ensuring the dataset is available and loaded."""
@@ -44,7 +45,7 @@ class MovieData(BaseModel):
         """Checks if the dataset exists; downloads and extracts it if missing."""
         self.EXTRACT_DIR.mkdir(exist_ok=True)
 
-        if not self.movie_metadata_path.exists() or not self.character_metadata_path.exists():
+        if not self.movie_metadata_path.exists() or not self.character_metadata_path.exists() or not self.summary_path.exists():
             if not self.ARCHIVE_PATH.exists():
                 print("Downloading dataset directly into MovieSummaries/...")
                 self._download_data()
@@ -81,28 +82,35 @@ class MovieData(BaseModel):
         """Loads movie and character metadata into Pandas DataFrames."""
         print(f"Checking: {self.movie_metadata_path}")
         print(f"Checking: {self.character_metadata_path}")
+        print(f"Checking: {self.summary_path}")
 
-        if not self.movie_metadata_path.exists() or not self.character_metadata_path.exists():
-            raise FileNotFoundError(
-                f"Missing dataset files:\n"
-                f"Expected: {self.movie_metadata_path}\n"
-                f"Expected: {self.character_metadata_path}\n"
-                f"Please ensure the dataset is properly extracted."
-            )
+        if not self.movie_metadata_path.exists() or not self.character_metadata_path.exists() or not self.summary_path.exists():
+            raise FileNotFoundError("Some dataset files are missing. Ensure they are extracted correctly.")
 
         print("Files found. Loading into DataFrames...")
 
+        # Load movies metadata
         movies_df = pd.read_csv(self.movie_metadata_path, sep="\t", header=None)
+
+        # Load summaries (Assuming format: "movie_id<TAB>summary")
+        summaries_df = pd.read_csv(self.summary_path, sep="\t", header=None, names=["movie_id", "summary"], dtype={"movie_id": str})
+
+        # Convert movie ID to string (to avoid mismatches)
+        movies_df[0] = movies_df[0].astype(str)
+        summaries_df["movie_id"] = summaries_df["movie_id"].astype(str)
+
+        # Merge summaries into movies_df
+        movies_df = movies_df.merge(summaries_df, left_on=0, right_on="movie_id", how="left")
+        print("✅ Movie summaries successfully loaded and merged!")
+
+        # Load character metadata
         actors_df = pd.read_csv(self.character_metadata_path, sep="\t", header=None)
 
-        movies_df = movies_df.dropna()
-        actors_df = actors_df.dropna()
-
-        object.__setattr__(self, "movies_df", movies_df)
-        object.__setattr__(self, "actors_df", actors_df)
+        # Assign DataFrames to class attributes
+        object.__setattr__(self, "movies_df", movies_df.dropna())
+        object.__setattr__(self, "actors_df", actors_df.dropna())
 
         print("Data successfully loaded.")
-
 
     def movie_type(self, N: PositiveInt = 10) -> pd.DataFrame:
         """Returns the top N most common movie genres.
@@ -243,10 +251,13 @@ class MovieData(BaseModel):
             df["Year"] = pd.to_datetime(df[3], errors="coerce").dt.year
         except Exception:
             df["Year"] = df[3].astype(str).str[:4].astype(float)
+
         if genre is not None:
             df = df[df[8].apply(lambda g: genre in list(g.values()) if isinstance(g, dict) else False)]
+
         releases_df = df.groupby("Year").size().reset_index(name="Count").dropna()
         releases_df["Year"] = releases_df["Year"].astype(int)
+
         return releases_df
 
     def ages(self, period: str = "Y") -> pd.DataFrame:
@@ -257,8 +268,10 @@ class MovieData(BaseModel):
         period = period.upper()
         if period not in ["Y", "M"]:
             period = "Y"
+
         df = self.actors_df.copy()
         df["BirthDate"] = pd.to_datetime(df[4], errors="coerce")
+
         if period == "Y":
             df["BirthYear"] = df["BirthDate"].dt.year
             result = df.groupby("BirthYear").size().reset_index(name="Count").dropna()
