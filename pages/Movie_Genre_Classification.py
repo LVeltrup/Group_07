@@ -5,7 +5,7 @@ import pandas as pd
 import random
 import ollama
 import ast
-from Group_07.BackendStructure.movie_data import MovieData
+from BackendStructure.movie_data import MovieData
 
 movie_data = MovieData()
 
