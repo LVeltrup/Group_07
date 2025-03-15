@@ -1,4 +1,5 @@
 import os
+from matplotlib import pyplot as plt
 import pandas as pd
 import requests
 import tarfile
@@ -174,3 +175,86 @@ class MovieData(BaseModel):
             result = df.groupby("BirthMonth").size().reset_index(name="Count").dropna()
             result["BirthMonth"] = result["BirthMonth"].astype(int)
             return result
+
+
+    def actor_distributions(self, gender: str, max_height_cm: float, min_height_cm: float, plot: bool = False) -> pd.DataFrame:
+            """Returns a filtered DataFrame of actors based on gender and height in centimeters.
+
+            Args:
+                gender (str): "M", "F", or "All" to filter by gender.
+                max_height_cm (float): Maximum height in centimeters.
+                min_height_cm (float): Minimum height in centimeters.
+                plot (bool): Whether to display a histogram of the height distribution.
+
+            Returns:
+                pd.DataFrame: A DataFrame with filtered actor information.
+            """
+            if not isinstance(gender, str):
+                raise ValueError("Gender must be a string.")
+            
+            try:
+                max_height_cm = float(max_height_cm)
+                min_height_cm = float(min_height_cm)
+            except ValueError:
+                raise ValueError("max_height and min_height must be numeric values.")
+
+            if max_height_cm <= 0 or min_height_cm <= 0:
+                raise ValueError("max_height and min_height must be positive numbers.")
+            
+            if not (50 <= min_height_cm <= 250):
+                raise ValueError("min_height must be between 50 cm and 250 cm.")
+            if not (50 <= max_height_cm <= 250):
+                raise ValueError("max_height must be between 50 cm and 250 cm.")
+            if min_height_cm > max_height_cm:
+                raise ValueError("min_height cannot be greater than max_height.")
+
+            possible_genders = {"M", "F"}
+            filtered_rows = []
+
+            for row in self.actors_df.itertuples(index=False):
+                row_list = list(row)
+
+                # Find gender (ensure it's a string and valid)
+                row_gender = next((col for col in row_list if isinstance(col, str) and col in possible_genders), None)
+
+                # Find height (must be numeric, not '########', and in expected range)
+                row_height = next((col for col in row_list if isinstance(col, (int, float, str)) 
+                                and str(col).replace('.', '', 1).isdigit() 
+                                and 1.0 <= float(col) <= 2.5), None)
+                row_height = float(row_height) * 100 if row_height else None  # Convert meters to cm
+
+                # Find actor name (ensure it's a valid human name, not an ID or missing value)
+                row_name = next((col for col in row_list if isinstance(col, str) and col not in possible_genders
+                                and not col.replace('.', '', 1).isdigit()  # Ensure it's not a height
+                                and not col.startswith("/m/")  # Exclude IDs like /m/03vyhn
+                                and "Unnamed" not in col  # Exclude 'Unnamed' placeholders
+                                and len(col.split()) > 1  # Assume names have at least two words
+                                ), None)
+
+                # Ensure we only include complete rows (no missing values)
+                if row_gender and row_height and row_name and row_height != "########":
+                    filtered_rows.append([row_name, row_height, row_gender])
+
+            filtered_df = pd.DataFrame(filtered_rows, columns=["Actor_Name", "Height_cm", "Gender"])
+
+            if filtered_df.empty:
+                print("⚠ No valid actors found.")
+                return filtered_df
+
+            # Apply gender filter if not "All"
+            if gender != "All":
+                filtered_df = filtered_df[filtered_df["Gender"] == gender]
+
+            # Apply height filter
+            filtered_df = filtered_df[(filtered_df["Height_cm"] >= min_height_cm) & (filtered_df["Height_cm"] <= max_height_cm)]
+
+            # Plot histogram if requested
+            if plot and not filtered_df.empty:
+                fig, ax = plt.subplots()
+                ax.hist(filtered_df["Height_cm"], bins=20, alpha=0.7)
+                ax.set_xlabel("Height (cm)")
+                ax.set_ylabel("Frequency")
+                ax.set_title(f"Height Distribution for {gender} actors")
+                st.pyplot(fig)
+
+            return filtered_df
