@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from BackendStructure.movie_data import MovieData
+from Backend_and_dataset.movie_data import MovieData
 
 @pytest.fixture
 def movie_data():

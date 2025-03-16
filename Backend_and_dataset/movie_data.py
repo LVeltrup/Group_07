@@ -21,7 +21,7 @@ class MovieData(BaseModel):
     # Dataset URL
     DATA_URL: ClassVar[str] = "http://www.cs.cmu.edu/~ark/personas/data/MovieSummaries.tar.gz"
 
-    EXTRACT_DIR: ClassVar[Path] = Path(__file__).resolve().parent / "MovieSummaries"
+    EXTRACT_DIR: ClassVar[Path] = Path(__file__).resolve().parent / "downloads" / "MovieSummaries"
     ARCHIVE_PATH: ClassVar[Path] = EXTRACT_DIR / "MovieSummaries.tar.gz"
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -42,18 +42,18 @@ class MovieData(BaseModel):
     
     def _ensure_data(self):
         """Checks if the dataset exists; downloads and extracts it if missing."""
-        self.EXTRACT_DIR.mkdir(exist_ok=True)
+        self.EXTRACT_DIR.mkdir(parents=True, exist_ok=True)
 
         if not self.movie_metadata_path.exists() or not self.character_metadata_path.exists() or not self.summary_path.exists():
             if not self.ARCHIVE_PATH.exists():
-                print("Downloading dataset directly into MovieSummaries/...")
+                print("Downloading dataset directly into downloads/MovieSummaries/...")
                 self._download_data()
             
             print("Extracting dataset...")
             self._extract_data()
 
     def _download_data(self):
-        """Downloads the MovieSummaries dataset directly into the MovieSummaries directory."""
+        """Downloads the MovieSummaries dataset directly into the downloads/MovieSummaries directory."""
         response = requests.get(self.DATA_URL, stream=True)
         if response.status_code == 200:
             with open(self.ARCHIVE_PATH, "wb") as file:
@@ -63,7 +63,7 @@ class MovieData(BaseModel):
             raise RuntimeError(f"Download error: Status {response.status_code}")
 
     def _extract_data(self):
-        """Extracts the downloaded TAR file inside the MovieSummaries directory."""
+        """Extracts the downloaded TAR file inside the downloads/MovieSummaries directory."""
         if self.ARCHIVE_PATH.exists():
             with tarfile.open(self.ARCHIVE_PATH, "r:gz") as tar:
                 tar.extractall(self.EXTRACT_DIR)

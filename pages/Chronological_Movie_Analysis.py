@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-from BackendStructure.movie_data import MovieData
+from Backend_and_dataset.movie_data import MovieData
 
 # Initialize movie data
 movie_data = MovieData()

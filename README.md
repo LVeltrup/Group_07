@@ -26,11 +26,11 @@ This project is a *Streamlit-based application* that processes movie and actor m
 | Path                             | Description                         |
 |----------------------------------|-------------------------------------|
 | /Group_07/                    | Root project directory                 |
-| ├── BackendStructure/         | Backend processing scripts             |
+| ├── Backend_and_dataset/         | Backend processing scripts             |
 | │   ├── movie_data.py         | MovieData class for data handling      |
 | │   ├── test_movie_data.py    | Pytest unit tests                      |
 | │   ├── __pycache__/          | Cached Python bytecode files (automatically generated, can be ignored) |
-| │   ├── MovieSummaries/       | Dataset storage                        |
+| │   ├── downloads/MovieSummaries/       | Dataset storage                        |
 | │   │   ├── character.metadata.tsv | Character data                         |
 | │   │   ├── movie.metadata.tsv    | Movie metadata                         |
 | │   │   ├── MovieSummaries.tar.gz | Compressed dataset                     |
