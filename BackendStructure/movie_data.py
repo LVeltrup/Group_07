@@ -10,7 +10,13 @@ import ast
 import streamlit as st
 
 class MovieData(BaseModel):
-    """Class for downloading, extracting, and processing the CMU MovieSummaries dataset."""
+    """Class for downloading, extracting, and processing the CMU MovieSummaries dataset.
+    
+    This class provides methods to:
+    - Download and extract the dataset if missing.
+    - Load and process movie and character metadata.
+    - Analyze movie genres, actor counts, and actor distributions.
+    """
 
     # Dataset URL
     DATA_URL: ClassVar[str] = "http://www.cs.cmu.edu/~ark/personas/data/MovieSummaries.tar.gz"
@@ -106,7 +112,14 @@ class MovieData(BaseModel):
         print("Data successfully loaded.")
 
     def movie_type(self, N: PositiveInt = 10) -> pd.DataFrame:
-        """Returns the top N most common movie genres."""
+        """Returns the top N most common movie genres.
+
+        Args:
+            N (int): Number of top movie genres to return.
+
+        Returns:
+            pd.DataFrame: A DataFrame with columns ["Movie_Type", "Count"].
+        """
         if not isinstance(N, int):
             raise ValueError("N must be an integer.")
 
@@ -131,7 +144,11 @@ class MovieData(BaseModel):
         return genre_counts
     
     def actor_count(self) -> pd.DataFrame:
-        """Returns a histogram of movie counts based on the number of actors."""
+        """Returns a histogram of movie counts based on the number of actors.
+
+        Returns:
+            pd.DataFrame: A DataFrame with columns ["Number_of_Actors", "Movie_Count"].
+        """
         if 0 not in self.actors_df.columns:
             raise KeyError("Column index 0 (Movie ID) not found in dataset.")
 
@@ -141,7 +158,11 @@ class MovieData(BaseModel):
         return actor_counts
     
     def releases(self, genre: str = None) -> pd.DataFrame:
-        """Returns a DataFrame counting the number of movies released per year."""
+        """
+        Returns a DataFrame counting the number of movies released per year.
+        If a genre is provided, only movies whose genres (from column index 8)
+        contain that genre are considered.
+        """
         df = self.movies_df.copy()
         try:
             df["Year"] = pd.to_datetime(df[3], errors="coerce").dt.year
@@ -157,7 +178,10 @@ class MovieData(BaseModel):
         return releases_df
 
     def ages(self, period: str = "Y") -> pd.DataFrame:
-        """Returns a DataFrame counting how many actors were born per year (or per month)."""
+        """
+        Returns a DataFrame counting how many actors were born per year (if period='Y')
+        or per month (if period='M'). Defaults to year.
+        """
         period = period.upper()
         if period not in ["Y", "M"]:
             period = "Y"
