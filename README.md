@@ -23,31 +23,31 @@ This project is a *Streamlit-based application* that processes movie and actor m
 
 ## Project Structure
 
-| Path                             | Description                             |
-|----------------------------------|-----------------------------------------|
+| Path                             | Description                         |
+|----------------------------------|-------------------------------------|
 | /Group_07/                    | Root project directory                 |
 | ├── BackendStructure/         | Backend processing scripts             |
 | │   ├── movie_data.py         | MovieData class for data handling      |
 | │   ├── test_movie_data.py    | Pytest unit tests                      |
 | │   ├── __pycache__/          | Cached Python bytecode files           |
+| |   ├── MovieSummaries/           | Dataset storage                    |
+| │       ├── character.metadata.tsv| Character data                     |
+| │       ├── movie.metadata.tsv    | Movie metadata                     |
+| │       ├── MovieSummaries.tar.gz | Compressed dataset                 |
+| │       ├── name.clusters.txt     | Name clustering data               |
+| │       ├── plot_summaries.txt    | Movie plot summaries               |
+| │       ├── tvropes.clusters.txt  | TV tropes clustering               |
 | ├── GenerellProjectFiles/     | General project-related files          |
 | │   ├── LICENSE               | Project license                        |
-| │   ├── Project_2425_Part_II.md | Project documentation                 |
+| │   ├── Project_2425_Part_II.md | Project documentation                |
 | │   ├── README.md             | Project documentation                  |
 | │   ├── requirements.txt      | Required dependencies                  |
 | │   ├── Task.mb               | Task management file                   |
-| ├── MovieSummaries/           | Dataset storage                        |
-| │   ├── character.metadata.tsv| Character data                         |
-| │   ├── movie.metadata.tsv    | Movie metadata                         |
-| │   ├── MovieSummaries.tar.gz | Compressed dataset                     |
-| │   ├── name.clusters.txt     | Name clustering data                    |
-| │   ├── plot_summaries.txt    | Movie plot summaries                   |
-| │   ├── tvropes.clusters.txt  | TV tropes clustering                    |
 | ├── pages/                    | Streamlit additional pages             |
 | │   ├── Chronological_Movie_Analysis.py | Chronological movie analysis |
 | │   ├── Movie_Genre_Classification.py  | Genre classification analysis |
-| ├── .gitignore                | Git ignore file                         |
-| ├── Movie_Data_Analysis.py    | Main Streamlit app                      |
+| ├── .gitignore                | Git ignore file                        |
+| ├── Movie_Data_Analysis.py    | Main Streamlit app                     |
 
 ## Installation
 This project requires *Python 3.8+* and the necessary dependencies.
