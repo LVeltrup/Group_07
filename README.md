@@ -38,7 +38,7 @@ This project is a *Streamlit-based application* that processes movie and actor m
 | │   │   ├── plot_summaries.txt    | Movie plot summaries                   |
 | │   │   ├── tvropes.clusters.txt  | TV tropes clustering                   |
 | │   │   ├── README.txt            | Dataset documentation                  |
-| ├── GenerellProjectFiles/     | General project-related files          |
+| ├── GeneralProjectFiles/     | General project-related files          |
 | │   ├── LICENSE               | Project license                        |
 | │   ├── Project_2425_Part_II.md | Project documentation                |
 | │   ├── README.md             | Project documentation                  |
